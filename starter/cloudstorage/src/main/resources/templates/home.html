@@ -137,8 +137,12 @@
                                 <tbody>
                                 <tr th:each="credential: ${credentials}">
                                     <td>
-                                        <button type="button" class="btn btn-success">Edit</button>
-                                        <a class="btn btn-danger">Delete</a>
+                                        <button id="edit-credential" type="button" class="btn btn-success"
+                                                th:onclick="showCredentialModal([[${credential.credentialId}]],
+                                                [[${credential.url}]],
+                                                [[${credential.userName}]],
+                                                [[${encryptionService.decryptValue(credential.password, credential.key)}]])">Edit</button>
+                                        <a id="del-credential" class="btn btn-danger" th:href="@{/credential/delete/{id}(id = ${credential.credentialId})}">Delete</a>
                                     </td>
                                     <th scope="row" th:text="${credential.url}">Example Credential URL</th>
                                     <td th:text="${credential.userName}">Example Credential Username</td>
@@ -158,7 +162,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
+                                        <form th:action="@{/credentials}" method="POST">
                                             <input type="hidden" name="credentialId" id="credential-id">
                                             <div class="form-group">
                                                 <label for="note-title" class="col-form-label">URL</label>
