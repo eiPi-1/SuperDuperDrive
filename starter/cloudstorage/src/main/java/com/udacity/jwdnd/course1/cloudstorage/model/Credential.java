@@ -4,7 +4,7 @@ public class Credential {
     private Integer credentialId;
     private Integer userId;
     private String url;
-    private String username;
+    private String userName;
     private String password;
     private String key;
 
@@ -27,12 +27,12 @@ public class Credential {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -51,11 +51,11 @@ public class Credential {
         this.url = url;
     }
 
-    public String getCredentialKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setCredentialKey(String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 }
