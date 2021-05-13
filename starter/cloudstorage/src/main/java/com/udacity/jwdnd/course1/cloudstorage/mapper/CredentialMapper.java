@@ -26,5 +26,8 @@ public interface CredentialMapper {
     int updateCredentialById(Credential credential);
 
     @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialId}")
-    int getCredentialById(Credential credential);
+    Credential getCredentialById(Credential credential);
+
+    @Select("SELECT key FROM CREDENTIALS WHERE credentialid = #{credentialId}")
+    String getKeyByCredentialId(Credential credential);
 }

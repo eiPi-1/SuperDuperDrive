@@ -6,6 +6,7 @@ public class File {
     private String fileName;
     private String contentType;
     private byte[] fileData;
+    private long fileSize;
 
     public Integer getFileId() {
         return fileId;
@@ -23,11 +24,13 @@ public class File {
         this.userId = userId;
     }
 
+    public void setFileSize(long fileSize){ this.fileSize = fileSize; }
+
     public String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String noteTitle) {
+    public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 

@@ -1,13 +1,10 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.CredentialMapper;
-import com.udacity.jwdnd.course1.cloudstorage.model.CredentialForm;
 import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -23,17 +20,13 @@ public class CredentialService {
         System.out.println("Creating CredentialService bean");
     }
 
-    public Integer addCredential(CredentialForm credentialForm) {
-        Credential credential = new Credential();
-
-        credential.setUrl(credentialForm.getUrl());
-        credential.setUserName(credentialForm.getUserName());
-        credential.setPassword(credentialForm.getPassword());
-        credential.setUserId(credentialForm.getUserId());
-        credential.setKey(credentialForm.getKey());
-
-        Integer result = this.credentialMapper.addCredential(credential);
-        return result;
+    public Integer addOrEditCredential(Credential credential) {
+        if (credential.getCredentialId() == null){
+            return this.credentialMapper.addCredential(credential);
+        }
+        else{
+            return this.credentialMapper.updateCredentialById(credential);
+        }
     }
 
     public Integer deleteCredential(Integer credentialId){
@@ -43,4 +36,8 @@ public class CredentialService {
     public List<Credential> getCredentials(Integer userId){
         return credentialMapper.getAllCredentials(userId);
     }
+
+    public Credential getCredentialById(Credential credential){ return credentialMapper.getCredentialById(credential); }
+
+    public String getKeyByCredentialId(Credential credential){ return credentialMapper.getKeyByCredentialId(credential); }
 }

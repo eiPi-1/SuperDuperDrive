@@ -3,16 +3,13 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.services.EncryptionService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
-import com.udacity.jwdnd.course1.cloudstorage.model.CredentialForm;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -21,8 +18,8 @@ import java.util.List;
 @Controller
 public class CredentialController {
 
-    private CredentialService credentialService;
     private UserService userService;
+    private CredentialService credentialService;
     private EncryptionService encryptionService;
 
     public CredentialController(CredentialService credentialService, UserService userService,
@@ -32,29 +29,29 @@ public class CredentialController {
         this.encryptionService = encryptionService;
     }
 
-    @GetMapping
-    public String getAllCredentials(Authentication authentication, Model model) {
-        Integer userId = this.userService.getUser(authentication.getName()).getUserId();
-        List<Credential> allExistingCredentials = this.credentialService.getCredentials(userId);
-        model.addAttribute("credentials", allExistingCredentials);
-
-        return "redirect:/home";
-    }
-
     @PostMapping("/credentials")
-    public String addCredential(Authentication authentication, CredentialForm credentialForm, Model model) {
+    public String addCredential(Authentication authentication, Credential credential, Model model) {
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
-        credentialForm.setUserId(userId);
+        credential.setUserId(userId);
 
-        SecureRandom random = new SecureRandom();
-        byte[] key = new byte[16];
-        random.nextBytes(key);
-        String encodedKey = Base64.getEncoder().encodeToString(key);
-        String encryptedPassword = encryptionService.encryptValue(credentialForm.getPassword(), encodedKey);
+        String encodedKey = "";
 
-        credentialForm.setKey(encodedKey);
-        credentialForm.setPassword(encryptedPassword);
-        int numInsertedRows = this.credentialService.addCredential(credentialForm);
+        if (credential.getCredentialId() != null){
+            encodedKey = this.credentialService.getKeyByCredentialId(credential);
+        }
+        else{
+            SecureRandom random = new SecureRandom();
+            byte[] key = new byte[16];
+            random.nextBytes(key);
+            encodedKey = Base64.getEncoder().encodeToString(key);
+        }
+
+        String encryptedPassword = this.encryptionService.encryptValue(credential.getPassword(), encodedKey);
+
+        credential.setKey(encodedKey);
+        credential.setPassword(encryptedPassword);
+
+        int numInsertedRows = this.credentialService.addOrEditCredential(credential);
 
         List<Credential> allExistingCredentials = this.credentialService.getCredentials(userId);
 
