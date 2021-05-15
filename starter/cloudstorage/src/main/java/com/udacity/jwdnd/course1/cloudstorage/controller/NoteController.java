@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -31,15 +32,19 @@ public class NoteController {
 
     @PostMapping("/notes")
     public String addNote(Authentication authentication, Note note, Model model) {
+
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
         note.setUserId(userId);
 
         int numInsertedRows = this.noteService.addOrEditNote(note);
 
-        List<Note> allExistingNotes = this.noteService.getNotes(userId);
+        if (numInsertedRows >= 0){
+            model.addAttribute("noteSuccess","A new note was added successfully!");
+        } else {
+            model.addAttribute("noteError","Error while adding a note. Please, try again!");
+        }
 
         model.addAttribute("activeTab", "notes");
-        model.addAttribute("notes", allExistingNotes);
 
         return "redirect:/home";
     }

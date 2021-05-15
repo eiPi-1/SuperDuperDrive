@@ -9,11 +9,11 @@ import java.util.List;
 
 @Mapper
 public interface FileMapper {
-    @Select("SELECT * FROM FILES WHERE userid = #{userid}")
+    @Select("SELECT * FROM FILES WHERE userid = #{userId}")
     List<File> getAllFiles(Integer userId);
 
-    @Insert("INSERT INTO FILES (filename, contenttype, filesize, userid, filedata) VALUES(#{filename}, " +
-            "#{contenttype}, #{filesize}, #{userid}, #{filedata})")
+    @Insert("INSERT INTO FILES (filename, contenttype, filesize, userid, filedata) VALUES(#{fileName}, " +
+            "#{contentType}, #{fileSize}, #{userId}, #{fileData})")
     @Options(useGeneratedKeys = true, keyProperty = "fileId")
     int addFile(File file);
 
@@ -27,9 +27,9 @@ public interface FileMapper {
             "WHERE fileId = #{fileId}")
     int updateFileById(File file);
 
-    @Select("SELECT * FROM NOTES WHERE fileId = #{fileId}")
-    File getFileById(File file);
+    @Select("SELECT * FROM FILES WHERE fileId = #{fileId}")
+    File getFileById(Integer fileId);
 
-    @Select("SELECT * FROM NOTES WHERE filename = #{fileName} AND userid = #{userId")
+    @Select("SELECT * FROM FILES WHERE filename = #{fileName} AND userid = #{userId")
     File getFileByName(File file);
 }

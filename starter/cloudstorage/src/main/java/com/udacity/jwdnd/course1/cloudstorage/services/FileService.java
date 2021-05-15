@@ -26,6 +26,7 @@ public class FileService {
     }
 
     public Integer addOrEditFile(File file) {
+
         if (file.getFileId() == null){
             return this.fileMapper.addFile(file);
         }
@@ -54,5 +55,7 @@ public class FileService {
         return fileMapper.getAllFiles(userId);
     }
 
-    public File getNoteById(File file){ return this.fileMapper.getFileById(file); }
+    public File getFileById(Integer fileId){ return this.fileMapper.getFileById(fileId); }
+
+    public File getFileByName(File file){ return this.fileMapper.getFileByName(file); }
 }

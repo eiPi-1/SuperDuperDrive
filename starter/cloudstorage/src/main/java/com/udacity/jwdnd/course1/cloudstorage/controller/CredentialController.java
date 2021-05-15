@@ -53,10 +53,13 @@ public class CredentialController {
 
         int numInsertedRows = this.credentialService.addOrEditCredential(credential);
 
-        List<Credential> allExistingCredentials = this.credentialService.getCredentials(userId);
+        if (numInsertedRows >= 0){
+            model.addAttribute("credentialSuccess","A new credential was added successfully!");
+        } else {
+            model.addAttribute("credentialError","Error while adding a credential. Please, try again!");
+        }
 
-        //System.out.println("Added number of new credentials " + String.valueOf(numInsertedRows));
-        //System.out.println("Fetching to display credentials " + String.valueOf(allExistingCredentials.size()));
+        List<Credential> allExistingCredentials = this.credentialService.getCredentials(userId);
 
         model.addAttribute("activeTab", "credentials");
         model.addAttribute("credentials", allExistingCredentials);
