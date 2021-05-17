@@ -30,4 +30,7 @@ public interface CredentialMapper {
 
     @Select("SELECT key FROM CREDENTIALS WHERE credentialid = #{credentialId}")
     String getKeyByCredentialId(Credential credential);
+
+    @Select("SELECT * FROM CREDENTIALS WHERE url = #{url} AND username = #{userName}")
+    Credential getCredentialByURLandUsername(String url, String userName);
 }

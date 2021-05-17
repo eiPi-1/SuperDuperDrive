@@ -53,6 +53,13 @@ public class CredentialController {
         credential.setKey(encodedKey);
         credential.setPassword(encryptedPassword);
 
+        if (this.credentialService.getCredentialByURLandUsername(credential.getUrl(), credential.getUserName()) != null){
+            redirectAttributes.addFlashAttribute("credentialError",true);
+            redirectAttributes.addFlashAttribute("credentialErrorMessage",
+                    "Credential with this URL and Username already exists! Credential NOT created!");
+            return "redirect:/home";
+        }
+
         int numInsertedRows = this.credentialService.addOrEditCredential(credential);
 
         if (numInsertedRows >= 0){

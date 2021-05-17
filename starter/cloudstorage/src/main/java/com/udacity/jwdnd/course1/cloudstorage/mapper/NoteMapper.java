@@ -31,4 +31,7 @@ public interface NoteMapper {
 
     @Select("SELECT key FROM NOTES WHERE noteid = #{noteId}")
     String getKeyByNoteId(Note note);
+
+    @Select("SELECT * FROM NOTES WHERE notetitle = #{noteTitle}")
+    Note getNoteByTitle(String noteTitle);
 }

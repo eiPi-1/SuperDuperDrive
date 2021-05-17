@@ -34,6 +34,13 @@ public class NoteController {
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
         note.setUserId(userId);
 
+        if (this.noteService.getNoteByTitle(note.getNoteTitle()) != null){
+            redirectAttributes.addFlashAttribute("noteError",true);
+            redirectAttributes.addFlashAttribute("noteErrorMessage",
+                    "Note with this title already exists! Note NOT created!");
+            return "redirect:/home";
+        }
+
         int numInsertedRows = this.noteService.addOrEditNote(note);
 
         if (numInsertedRows >= 0){

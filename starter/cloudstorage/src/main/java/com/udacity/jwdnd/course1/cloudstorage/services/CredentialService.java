@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage.services;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.CredentialMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
+import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -40,4 +41,8 @@ public class CredentialService {
     public Credential getCredentialById(Credential credential){ return credentialMapper.getCredentialById(credential); }
 
     public String getKeyByCredentialId(Credential credential){ return credentialMapper.getKeyByCredentialId(credential); }
+
+    public Credential getCredentialByURLandUsername(String url, String username){
+        return this.credentialMapper.getCredentialByURLandUsername(url, username);
+    }
 }

@@ -37,14 +37,17 @@ public class FileController {
                              RedirectAttributes redirectAttributes) {
 
         if(fileUpload.isEmpty()) {
+
             redirectAttributes.addFlashAttribute("fileError",true);
             redirectAttributes.addFlashAttribute("fileErrorMessage","No file is chosen for an upload!");
             return "redirect:/home";
         }
+
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
 
         try {
             File file = this.fileService.createFile(fileUpload, userId);
+
             if (this.fileService.getFileByName(file) != null){
                 redirectAttributes.addFlashAttribute("fileError",true);
                 redirectAttributes.addFlashAttribute("fileErrorMessage",

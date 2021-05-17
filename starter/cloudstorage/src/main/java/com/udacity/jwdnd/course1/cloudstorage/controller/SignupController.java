@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller()
 @RequestMapping("/signup")
@@ -25,24 +26,27 @@ public class SignupController {
     }
 
     @PostMapping()
-    public String signupUser(@ModelAttribute User user, Model model) {
-        String signupError = null;
+    public String signupUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+        String signupErrorMessage = null;
 
         if (!userService.isUsernameAvailable(user.getUsername())) {
-            signupError = "The username already exists.";
+            signupErrorMessage = "The username already exists.";
         }
 
-        if (signupError == null) {
+        if (signupErrorMessage == null) {
             int rowsAdded = userService.createUser(user);
             if (rowsAdded < 0) {
-                signupError = "There was an error signing you up. Please try again.";
+                signupErrorMessage = "There was an error signing you up. Please try again.";
             }
         }
 
-        if (signupError == null) {
-            model.addAttribute("signupSuccess", true);
+        if (signupErrorMessage == null) {
+            redirectAttributes.addFlashAttribute("signupSuccess",true);
+            redirectAttributes.addFlashAttribute("signupSuccessMessage", "New user was successfully created!");
+            return "redirect:/login";
         } else {
-            model.addAttribute("signupError", signupError);
+            redirectAttributes.addFlashAttribute("signupError",true);
+            redirectAttributes.addFlashAttribute("signupErrorMessage", "Error creating a new user!");
         }
 
         return "signup";

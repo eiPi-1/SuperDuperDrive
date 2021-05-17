@@ -30,6 +30,6 @@ public interface FileMapper {
     @Select("SELECT * FROM FILES WHERE fileId = #{fileId}")
     File getFileById(Integer fileId);
 
-    @Select("SELECT * FROM FILES WHERE filename = #{fileName} AND userid = #{userId")
+    @Select("SELECT * FROM FILES WHERE filename = #{fileName} AND userid = #{userId}")
     File getFileByName(File file);
 }
