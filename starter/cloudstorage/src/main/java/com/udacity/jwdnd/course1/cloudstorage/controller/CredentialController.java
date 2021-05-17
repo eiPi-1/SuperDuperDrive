@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -30,7 +31,8 @@ public class CredentialController {
     }
 
     @PostMapping("/credentials")
-    public String addCredential(Authentication authentication, Credential credential, Model model) {
+    public String addCredential(Authentication authentication, Credential credential,
+                                RedirectAttributes redirectAttributes) {
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
         credential.setUserId(userId);
 
@@ -54,26 +56,35 @@ public class CredentialController {
         int numInsertedRows = this.credentialService.addOrEditCredential(credential);
 
         if (numInsertedRows >= 0){
-            model.addAttribute("credentialSuccess","A new credential was added successfully!");
+            redirectAttributes.addFlashAttribute("credentialSuccess",true);
+            redirectAttributes.addFlashAttribute("credentialSuccessMessage","A new credential was added successfully!");
         } else {
-            model.addAttribute("credentialError","Error while adding a credential. Please, try again!");
+            redirectAttributes.addFlashAttribute("credentialError",true);
+            redirectAttributes.addFlashAttribute("credentialErrorMessage","Error while adding a credential. Please, try again!");
         }
 
         List<Credential> allExistingCredentials = this.credentialService.getCredentials(userId);
 
-        model.addAttribute("activeTab", "credentials");
-        model.addAttribute("credentials", allExistingCredentials);
-        model.addAttribute("encryptionService", encryptionService);
+        redirectAttributes.addFlashAttribute("activeTab", "credentials");
 
         return "redirect:/home";
     }
 
     @GetMapping("/credential/delete/{credentialId}")
-    public String deleteCredential(@PathVariable("credentialId") int credentialId, Model model){
-        credentialService.deleteCredential(credentialId);
+    public String deleteCredential(@PathVariable("credentialId") int credentialId,
+                                   RedirectAttributes redirectAttributes){
+        int numDeletedRows = credentialService.deleteCredential(credentialId);
 
-        model.addAttribute("activeTab", "credentials");
-        model.addAttribute("encryptionService", encryptionService);
+        if (numDeletedRows >= 0){
+            redirectAttributes.addFlashAttribute("credentialSuccess",true);
+            redirectAttributes.addFlashAttribute("credentialSuccessMessage","A credential was deleted!");
+        } else {
+            redirectAttributes.addFlashAttribute("credentialError",true);
+            redirectAttributes.addFlashAttribute("credentialErrorMessage","Error while deleting a credential. Please, try again!");
+        }
+
+        redirectAttributes.addFlashAttribute("activeTab", "credentials");
+        //redirectAttributes.addFlashAttribute("encryptionService", encryptionService);
 
         return "redirect:/home";
     }

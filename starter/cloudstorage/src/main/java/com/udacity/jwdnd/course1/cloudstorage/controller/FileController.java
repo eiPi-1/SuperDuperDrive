@@ -34,50 +34,49 @@ public class FileController {
 
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, Authentication authentication,
-                             Model model) {
+                             RedirectAttributes redirectAttributes) {
 
         if(fileUpload.isEmpty()) {
-            model.addAttribute("error",true);
-            model.addAttribute("message","No file is chosen for an upload!");
-            return "result";
+            redirectAttributes.addFlashAttribute("fileError",true);
+            redirectAttributes.addFlashAttribute("fileErrorMessage","No file is chosen for an upload!");
+            return "redirect:/home";
         }
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
 
         try {
             File file = this.fileService.createFile(fileUpload, userId);
             if (this.fileService.getFileByName(file) != null){
-                model.addAttribute("success",false);
-                model.addAttribute("message","File with this name already exists! File NOT uploaded!");
+                redirectAttributes.addFlashAttribute("fileError",true);
+                redirectAttributes.addFlashAttribute("fileErrorMessage",
+                        "File with this name already exists! File NOT uploaded!");
             }
             else {
                 this.fileService.addOrEditFile(file);
-                model.addAttribute("success", true);
-                model.addAttribute("message", "File uploaded successfully!");
+                redirectAttributes.addFlashAttribute("fileSuccess", true);
+                redirectAttributes.addFlashAttribute("fileSuccessMessage", "File uploaded successfully!");
             }
         } catch (Exception e){
-            model.addAttribute("success",false);
-            model.addAttribute("message","Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("fileError",true);
+            redirectAttributes.addFlashAttribute("fileErrorMessage",
+                    "Error: " + e.getMessage());
         }
 
-        model.addAttribute("activeTab", "files");
+        redirectAttributes.addFlashAttribute("activeTab", "files");
 
         return "redirect:/home";
     }
 
     @GetMapping("/files/delete/{fileId}")
-    public String deleteFile(@PathVariable("fileId") int fileId, Model model){
+    public String deleteFile(@PathVariable("fileId") int fileId, RedirectAttributes redirectAttributes){
         this.fileService.deleteFile(fileId);
 
-        model.addAttribute("activeTab", "files");
+        redirectAttributes.addFlashAttribute("activeTab", "files");
 
         return "redirect:/home";
     }
 
     @GetMapping("/files/view/{fileId}")
-    public ResponseEntity<InputStreamSource> getFile(@PathVariable Integer fileId,
-                                                      Authentication authentication)  {
-        System.out.println("Inside getFile");
-        System.out.println("fileId " + Integer.toString(fileId));
+    public ResponseEntity<InputStreamSource> getFile(@PathVariable Integer fileId)  {
         File file = this.fileService.getFileById(fileId);
 
         ByteArrayResource resource = new ByteArrayResource(file.getFileData());

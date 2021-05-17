@@ -1,8 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
-import com.udacity.jwdnd.course1.cloudstorage.services.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.EncryptionService;
 import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
@@ -31,7 +29,7 @@ public class NoteController {
     }
 
     @PostMapping("/notes")
-    public String addNote(Authentication authentication, Note note, Model model) {
+    public String addNote(Authentication authentication, Note note, RedirectAttributes redirectAttributes) {
 
         Integer userId = this.userService.getUser(authentication.getName()).getUserId();
         note.setUserId(userId);
@@ -39,21 +37,31 @@ public class NoteController {
         int numInsertedRows = this.noteService.addOrEditNote(note);
 
         if (numInsertedRows >= 0){
-            model.addAttribute("noteSuccess","A new note was added successfully!");
+            redirectAttributes.addFlashAttribute("noteSuccess",true);
+            redirectAttributes.addFlashAttribute("noteSuccessMessage","A new note was added or edited successfully!");
         } else {
-            model.addAttribute("noteError","Error while adding a note. Please, try again!");
+            redirectAttributes.addFlashAttribute("noteError",true);
+            redirectAttributes.addFlashAttribute("noteErrorMessage","Error while adding a note. Please, try again!");
         }
 
-        model.addAttribute("activeTab", "notes");
+        redirectAttributes.addFlashAttribute("activeTab", "notes");
 
         return "redirect:/home";
     }
 
     @GetMapping("/notes/delete/{noteId}")
-    public String deleteNote(@PathVariable("noteId") int noteId, Model model){
-        this.noteService.deleteNote(noteId);
+    public String deleteNote(@PathVariable("noteId") int noteId, RedirectAttributes redirectAttributes){
+        int numDeletedRows = this.noteService.deleteNote(noteId);
 
-        model.addAttribute("activeTab", "notes");
+        if (numDeletedRows >= 0){
+            redirectAttributes.addFlashAttribute("noteSuccess",true);
+            redirectAttributes.addFlashAttribute("noteSuccessMessage","A note was deleted!");
+        } else {
+            redirectAttributes.addFlashAttribute("noteError",true);
+            redirectAttributes.addFlashAttribute("noteErrorMessage","Error while deleting a note. Please, try again!");
+        }
+
+        redirectAttributes.addFlashAttribute("activeTab", "notes");
 
         return "redirect:/home";
     }
