@@ -86,6 +86,6 @@ public class FileController {
         MediaType mt = MediaType.parseMediaType(file.getContentType());
 
         return ResponseEntity.ok().contentType(mt).header(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=\"" + file.getFileName() + "\"").body(resource);
+                "attachment; filename=\"" + file.getFileName() + "\"").body(resource);
     }
 }
